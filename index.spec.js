@@ -1,6 +1,7 @@
 
 'use strict';
 
+const stream = require('stream');
 const ava = require('ava');
 const spec = require('stream-spec');
 const tester = require('stream-tester');
@@ -10,7 +11,7 @@ const Stream2Multiple = require('.');
 const MIN_DESTINATIONS = 2;
 const MAX_DESTINATIONS = 100;
 
-let stream;
+let s;
 
 ava.beforeEach(() => {
 	// create a random number of destinations
@@ -19,25 +20,32 @@ ava.beforeEach(() => {
 				+ MIN_DESTINATIONS;
 
 	const destinations = Array.apply(null, new Array(numDestinations))
-		.map(() => tester.createPauseStream());
+		.map(() => {
+			let pause = new stream.Writable({
+				objectMode: true,
+				write(chunk, encoding, callback){ callback(); }
+			});
+
+			return pause;
+		});
 
 	// create the stream to multiple instance use on tests
-	stream = new Stream2Multiple(destinations, { objectMode: true });
+	s = new Stream2Multiple(destinations, { objectMode: true });
 });
 
 ava.cb((t) => {
 
-	spec(stream)
+	spec(s)
 		.writable()
 		.drainable()
 		.validateOnExit();
 
 	tester.createRandomStream(function () {
 		return [new Date(), 'line ' + Math.random()];
-	}, 1000)
-		.pipe(stream);
+	}, 100)
+		.pipe(s);
 
-	stream.on('end', t.end);
-	stream.on('error', t.end);
+	s.on('finish', t.end);
+	s.on('error', t.end);
 });
 
