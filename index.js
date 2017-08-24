@@ -14,7 +14,10 @@ class Stream2Multiple extends stream.Writable {
 	 * @param {stream.Writable[]} destinations Array of stream destinations.
 	 * @param {Object} options Parent options.
 	 */
-	constructor(destinations, options={}){
+	constructor(destinations, options){
+
+		// set default options if not provided
+		if(!options){ options = {}; }
 
 		super(options);
 
