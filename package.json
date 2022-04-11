@@ -1,5 +1,5 @@
 {
-  "name": "@zephyrec/stream2multiple",
+  "name": "@yeiniel/stream2multiple",
   "version": "1.0.0",
   "description": "Pipe same stream content into multiple destinations",
   "main": "index.js",
@@ -22,10 +22,10 @@
   },
   "homepage": "https://github.com/zephyrec/stream2multiple#readme",
   "devDependencies": {
-    "ava": "^0.22.0",
-    "eslint": "^4.5.0",
-    "eslint-config-standard-jsdoc": "^0.3.2",
-    "jsdoc": "^3.5.4",
+    "ava": "^4.1.0",
+    "eslint": "^8.13.0",
+    "eslint-config-standard-jsdoc": "^9.3.0",
+    "jsdoc": "^3.6.10",
     "stream-spec": "^0.3.6",
     "stream-tester": "0.0.5"
   }

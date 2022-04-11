@@ -1,4 +1,3 @@
-
 'use strict';
 
 const stream = require('stream');
@@ -17,13 +16,13 @@ ava.beforeEach(() => {
 	// create a random number of destinations
 	const numDestinations = Math.floor(
 		Math.random() * (MAX_DESTINATIONS - MIN_DESTINATIONS + 1))
-				+ MIN_DESTINATIONS;
+		+ MIN_DESTINATIONS;
 
 	const destinations = Array.apply(null, new Array(numDestinations))
 		.map(() => {
 			let pause = new stream.Writable({
 				objectMode: true,
-				write(chunk, encoding, callback){ callback(); }
+				write(chunk, encoding, callback) { callback(); }
 			});
 
 			return pause;
@@ -33,19 +32,23 @@ ava.beforeEach(() => {
 	s = new Stream2Multiple(destinations, { objectMode: true });
 });
 
-ava.cb((t) => {
+ava('valid writable stream', (t) => {
+	return new Promise((resolve, reject) => {
+		spec(s)
+			.writable()
+			.drainable()
+			.validateOnExit();
 
-	spec(s)
-		.writable()
-		.drainable()
-		.validateOnExit();
+		tester.createRandomStream(function () {
+			return [new Date(), 'line ' + Math.random()];
+		}, 100)
+			.pipe(s);
 
-	tester.createRandomStream(function () {
-		return [new Date(), 'line ' + Math.random()];
-	}, 100)
-		.pipe(s);
-
-	s.on('finish', t.end);
-	s.on('error', t.end);
+		s.on('finish', () => {
+			t.pass();
+			resolve();
+		});
+		s.on('error', error => reject(error));
+	});
 });
 
